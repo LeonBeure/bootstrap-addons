@@ -7,10 +7,14 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
   </head>
-  <body>
+  <body class="container">
 
-    <h2>World Wide Earthquakes occuring in past 24 hours</h2>
-    <div class="container" ng-controller="TimesliderController" style="margin-top:50px;">
+    <div class="row">
+      <div class="col-md-4 col-md-offset-4">
+        <h2>World Wide Earthquakes occuring in past 24 hours</h2>
+      </div>
+    </div>
+    <div ng-controller="TimesliderController" style="margin-top:50px;">
       <timeslider width="900" start="start" end="end" ticks="10" on-change="filterByTime" on-clear="removeTimeFilter"></timeslider>
       <div id="map" style="height: 500px; width: 972px;"></div>
     </div>
