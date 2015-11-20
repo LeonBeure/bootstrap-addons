@@ -13,57 +13,11 @@ angular.module('BootstrapAddons')
     templateUrl: 'timeslider/timeslider.html',
     replace: true,
     link: function(scope, elem, attr) {
-      var timeScale = d3.time.scale.utc()
-        .domain([scope.start.getTime(), scope.end.getTime()])
-        .range([0, parseInt(scope.width, 10)]);
-
-      var svg = d3.select("#timeslider");
-
-      //draw time scale ticks
-      timeScale.ticks(parseInt(scope.ticks, 10)).forEach(function(tick, index) {
-        svg.append('line')
-          .attr('class', 'scaleLine')
-          .attr('x1', timeScale(tick))
-          .attr('x2', timeScale(tick))
-          .attr('y1', 0)
-          .attr('y2', 22);
-
-        if(index % 2 != 0) {
-          var hours = tick.getUTCHours();
-          if (hours < 10) hours = "0" + hours;
-          svg.append('text')
-            .attr('class', 'scaleLabel')
-            .attr('x', timeScale(tick))
-            .attr('dx', '-1.25em')
-            .attr('y', 11)
-            .attr('text-anchor', 'left')
-            .attr('dominant-baseline', 'middle')
-            .text(hours);
-
-          var mins = tick.getUTCMinutes();
-          if (mins < 10) mins = "0" + mins;
-          svg.append('text')
-            .attr('class', 'scaleLabel')
-            .attr('x', timeScale(tick))
-            .attr('dx', '0.25em')
-            .attr('y', 11)
-            .attr('text-anchor', 'right')
-            .attr('dominant-baseline', 'middle')
-            .text(mins);
-        }
-      });
-
-      var brush = d3.svg.brush()
-        .x(timeScale)
-        .on('brushend', brushend);
-      svg.append('g')
-        .attr('class', 'brush')
-        .call(brush)
-        .selectAll('rect')
-          .attr('height', 22);
-
+      var brush;
       scope.actionIcon = "glyphicon-play";
       var intervalId = null;
+
+      drawTimeline();
 
       scope.togglePlay = function() {
         if(intervalId) {
@@ -138,6 +92,63 @@ angular.module('BootstrapAddons')
           brushSize = (scope.end.getTime() - scope.start.getTime()) / 45;
         }
         return brushSize;
+      }
+
+      function drawTimeline() {
+        var timeScale = d3.time.scale.utc()
+          .domain([scope.start.getTime(), scope.end.getTime()])
+          .range([0, parseInt(scope.width, 10)]);
+
+        var svg = d3.select("#timeslider");
+
+        //clean up old scale and brush
+        //TODO maybe use enter selection and update selection instead of recreating
+        svg.selectAll('.scaleLine').remove();
+        svg.selectAll('.scaleLabel').remove();
+        svg.selectAll('.brush').remove();
+
+        //draw time scale ticks
+        timeScale.ticks(parseInt(scope.ticks, 10)).forEach(function(tick, index) {
+          svg.append('line')
+            .attr('class', 'scaleLine')
+            .attr('x1', timeScale(tick))
+            .attr('x2', timeScale(tick))
+            .attr('y1', 0)
+            .attr('y2', 22);
+
+          if(index % 2 != 0) {
+            var hours = tick.getUTCHours();
+            if (hours < 10) hours = "0" + hours;
+            svg.append('text')
+              .attr('class', 'scaleLabel')
+              .attr('x', timeScale(tick))
+              .attr('dx', '-1.25em')
+              .attr('y', 11)
+              .attr('text-anchor', 'left')
+              .attr('dominant-baseline', 'middle')
+              .text(hours);
+
+            var mins = tick.getUTCMinutes();
+            if (mins < 10) mins = "0" + mins;
+            svg.append('text')
+              .attr('class', 'scaleLabel')
+              .attr('x', timeScale(tick))
+              .attr('dx', '0.25em')
+              .attr('y', 11)
+              .attr('text-anchor', 'right')
+              .attr('dominant-baseline', 'middle')
+              .text(mins);
+          }
+        });
+
+        brush = d3.svg.brush()
+          .x(timeScale)
+          .on('brushend', brushend);
+        svg.append('g')
+          .attr('class', 'brush')
+          .call(brush)
+          .selectAll('rect')
+            .attr('height', 22);
       }
     }
   }
