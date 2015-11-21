@@ -16,8 +16,19 @@ angular.module('BootstrapAddons')
       var brush;
       scope.actionIcon = "glyphicon-play";
       var intervalId = null;
-
       drawTimeline();
+
+      scope.$watch('end', function(newVal, oldVal) {
+        if(newVal.getTime() !== oldVal.getTime()) {
+          var oldBrush = brush.extent();
+          scope.end = newVal;
+          drawTimeline();
+          if(oldBrush[0].getTime() !== oldBrush[1].getTime()) {
+            brush.extent([oldBrush[0], oldBrush[1]]);
+            brush(d3.select('.brush'));
+          }
+        }
+      }, true);
 
       scope.togglePlay = function() {
         if(intervalId) {

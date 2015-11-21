@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html ng-app="demoApp">
+  <head>
+    <title>update time range demo</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../dist/css/bootstrap-addons.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  </head>
+  <body>
+
+    <div class="container" ng-controller="TimesliderController" style="margin-top:50px;">
+      <h2>Time Span {{start}} to {{end}}</h2>
+      <p>
+        Time span increases every 10 seconds ($interval).
+        Timeslider automatically covers the new time span.
+        Brushes stay active.
+      </p>
+      <timeslider width="900" start="start" end="end" ticks="10" on-change="filterByTime" on-clear="removeTimeFilter"></timeslider>
+      <div id="map" style="height: 500px; width: 972px;"></div>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../dist/js/bootstrap-addons.js"></script>
+    <script type="text/javascript">
+      var app = angular.module('demoApp', ['BootstrapAddons']);
+
+      app.controller('TimesliderController', function($scope, $interval) {
+        var ONE_MIN = 1000 * 60;
+        var xf;
+        var timeDim;
+        var markerLayer;
+        $scope.end = new Date();
+        $scope.start = new Date(Date.now() - (ONE_MIN * 5));
+
+        $interval(function() {
+          $scope.end = new Date();
+        }, 10000);
+
+        $scope.filterByTime = function(start, end) {
+          console.log("time filter updated - do something with your data set");
+        }
+        $scope.removeTimeFilter = function() {
+          console.log("time filtered removed, - do something with your data set");
+        }
+      });
+    </script>
+  </body>
+</html>
