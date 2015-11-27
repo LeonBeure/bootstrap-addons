@@ -1,18 +1,18 @@
-<div>
-  <div class="btn-group">
-    <button class="btn btn-xs btn-primary" ng-click="togglePlay()">
+<div class="timeslider-container">
+  <div class="btn-group timeslider-btns">
+    <button class="btn  btn-primary" ng-click="togglePlay()">
       <span class="glyphicon {{actionIcon}}"></span>
     </button>
-    <button class="btn btn-xs btn-primary" ng-click="stepBack()">
+    <button class="btn btn-primary" ng-click="stepBack()">
       <span class="glyphicon glyphicon-step-backward"></span>
     </button>
-    <button class="btn btn-xs btn-primary" ng-click="stepForward()">
+    <button class="btn btn-primary" ng-click="stepForward()">
       <span class="glyphicon glyphicon-step-forward"></span>
     </button>
-    <svg id="timeslider" ng-attr-width="{{width}}" height="22">
-      <g>
-        <rect x="0" y="0" ng-attr-width="{{width}}" height="22" class="timeslider">
-      </g>
-    </svg>
   </div>
+  <svg id="timeslider" ng-attr-width="{{width}}" class="timeslider-svg">
+    <!-- <g>
+      <rect x="0" y="0" ng-attr-width="{{width}}" class="timeslider">
+    </g> -->
+  </svg>
 </div>

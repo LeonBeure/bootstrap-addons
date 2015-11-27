@@ -18,3 +18,26 @@
   fill: #337ab7;
   font-size: 0.6em;
 }
+
+#timeslider {
+  height: 34px;
+  border: solid 2px rgb(51, 122, 183);
+  border-left: none;
+  box-sizing: border-box;
+}
+
+.timeslider-container {
+  height: 34px;
+}
+
+.btn-group.timeslider-btns {
+  display: block;
+}
+
+.timeslider-btns button.btn {
+  border-radius: 0px;
+}
+
+.timeslider-svg .scaleLabel {
+  font-size: 1em;
+}

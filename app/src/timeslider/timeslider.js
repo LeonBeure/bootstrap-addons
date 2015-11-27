@@ -125,7 +125,7 @@ angular.module('BootstrapAddons')
             .attr('x1', timeScale(tick))
             .attr('x2', timeScale(tick))
             .attr('y1', 0)
-            .attr('y2', 22);
+            .attr('y2', 34);
 
           if(index % 2 != 0) {
             var hours = tick.getUTCHours();
@@ -159,7 +159,7 @@ angular.module('BootstrapAddons')
           .attr('class', 'brush')
           .call(brush)
           .selectAll('rect')
-            .attr('height', 22);
+            .attr('height', 34);
       }
     }
   }
