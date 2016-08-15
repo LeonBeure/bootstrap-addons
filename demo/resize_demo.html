@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html ng-app="resizeDemo">
+  <head>
+    <title>timeslider resize demo</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../dist/css/bootstrap-addons.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+  </head>
+  <body>
+
+    <div ng-controller="TimesliderController" style="margin:50px 30px 0px 30px;">
+      <h3>Resize window and watch timeslider dynamically resize!</h3>
+      <timeslider start="start" end="end" ticks="10" on-change="filterByTime" on-clear="removeTimeFilter"></timeslider>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../dist/js/bootstrap-addons.js"></script>
+    <script type="text/javascript">
+      var app = angular.module('resizeDemo', ['BootstrapAddons']);
+
+      app.controller('TimesliderController', function($scope, $http, $window) {
+        var ONE_DAY = 86400000;
+        $scope.end = new Date();
+        $scope.start = new Date(Date.now() - ONE_DAY);
+
+        angular.element($window).on('resize', function() {
+          //This is just a demo
+          //You may want to debounce the events
+          //https://davidwalsh.name/javascript-debounce-function
+          $scope.$broadcast('timesliderForceRender');
+        });
+
+        $scope.filterByTime = function(start, end) {
+          console.log("filterByTime");
+        }
+        $scope.removeTimeFilter = function() {
+          console.log("removeTimeFilter");
+        }
+      });
+    </script>
+  </body>
+</html>

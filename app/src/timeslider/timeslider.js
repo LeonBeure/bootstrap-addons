@@ -1,5 +1,7 @@
 angular.module('BootstrapAddons')
 .directive('timeslider', function($document, $timeout) {
+  const SVG_ID = "timesliderSvg";
+  const CONTROLS_WIDTH = 72; //fixed width of buttons used to advance timeslider
   return {
     restrict: 'E',
     scope: {
@@ -14,21 +16,24 @@ angular.module('BootstrapAddons')
     replace: true,
     link: function(scope, elem, attr) {
       var brush;
+      var autoScale = false;
+      if(!scope.width) {
+        autoScale = true;
+      }
       scope.actionIcon = "glyphicon-play";
       var intervalId = null;
       drawTimeline();
 
       scope.$watch('end', function(newVal, oldVal) {
         if(newVal.getTime() !== oldVal.getTime()) {
-          var oldBrush = brush.extent();
           scope.end = newVal;
-          drawTimeline();
-          if(oldBrush[0].getTime() !== oldBrush[1].getTime()) {
-            brush.extent([oldBrush[0], oldBrush[1]]);
-            brush(d3.select('.brush'));
-          }
+          redraw();
         }
       }, true);
+
+      scope.$on('timesliderForceRender', function() {
+        redraw();
+      });
 
       scope.togglePlay = function() {
         if(intervalId) {
@@ -105,18 +110,40 @@ angular.module('BootstrapAddons')
         return brushSize;
       }
 
+      function redraw() {
+        var oldBrush = brush.extent();
+        drawTimeline();
+        if(oldBrush[0].getTime() !== oldBrush[1].getTime()) {
+          brush.extent([oldBrush[0], oldBrush[1]]);
+          brush(d3.select('.brush'));
+        }
+      }
+
       function drawTimeline() {
+        if(autoScale) {
+          scope.width = elem[0].clientWidth - CONTROLS_WIDTH;
+        }
+        if(scope.width <= 0) {
+          console.log("Element does not have enough width to support timeslider, unable to draw");
+          return;
+        }
+
+        var container = d3.select("#timesliderContainer");
+        container.selectAll('#' + SVG_ID).remove();
+        var svg = container.append('svg')
+          .attr("id", SVG_ID)
+          .attr("width", scope.width)
+          .attr("height", 22);
+        svg.append('g').append('rect')
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", scope.width)
+          .attr("height", 22)
+          .attr("class", 'timeslider');
+
         var timeScale = d3.time.scale.utc()
           .domain([scope.start.getTime(), scope.end.getTime()])
           .range([0, parseInt(scope.width, 10)]);
-
-        var svg = d3.select("#timeslider");
-
-        //clean up old scale and brush
-        //TODO maybe use enter selection and update selection instead of recreating
-        svg.selectAll('.scaleLine').remove();
-        svg.selectAll('.scaleLabel').remove();
-        svg.selectAll('.brush').remove();
 
         //draw time scale ticks
         timeScale.ticks(parseInt(scope.ticks, 10)).forEach(function(tick, index) {
