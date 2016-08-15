@@ -123,10 +123,7 @@ angular.module('BootstrapAddons')
         if(autoScale) {
           scope.width = elem[0].clientWidth - CONTROLS_WIDTH;
         }
-        if(scope.width <= 0) {
-          console.log("Element does not have enough width to support timeslider, unable to draw");
-          return;
-        }
+        if(scope.width <= 0) scope.width = CONTROLS_WIDTH * 2;
 
         var container = d3.select("#timesliderContainer");
         container.selectAll('#' + SVG_ID).remove();
