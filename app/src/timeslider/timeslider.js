@@ -2,6 +2,7 @@ angular.module('BootstrapAddons')
 .directive('timeslider', function($document, $timeout) {
   const SVG_ID = "timesliderSvg";
   const CONTROLS_WIDTH = 72; //fixed width of buttons used to advance timeslider
+  const MS_PER_DAY = 86400000;
   return {
     restrict: 'E',
     scope: {
@@ -124,6 +125,7 @@ angular.module('BootstrapAddons')
           scope.width = elem[0].clientWidth - CONTROLS_WIDTH;
         }
         if(scope.width <= 0) scope.width = CONTROLS_WIDTH * 2;
+        var timeWidth = scope.end.getTime() - scope.start.getTime();
 
         var container = d3.select("#timesliderContainer");
         container.selectAll('#' + SVG_ID).remove();
@@ -141,38 +143,45 @@ angular.module('BootstrapAddons')
         var timeScale = d3.time.scale.utc()
           .domain([scope.start.getTime(), scope.end.getTime()])
           .range([0, parseInt(scope.width, 10)]);
+        var endPixelLocation = timeScale(scope.end.getTime());
 
         //draw time scale ticks
+        var lastTick = null;
         timeScale.ticks(parseInt(scope.ticks, 10)).forEach(function(tick, index) {
+          var tickPixelLocation = timeScale(tick);
           svg.append('line')
             .attr('class', 'scaleLine')
-            .attr('x1', timeScale(tick))
-            .attr('x2', timeScale(tick))
+            .attr('x1', tickPixelLocation)
+            .attr('x2', tickPixelLocation)
             .attr('y1', 0)
             .attr('y2', 22);
 
-          if(index % 2 != 0) {
-            var hours = tick.getUTCHours();
-            if (hours < 10) hours = "0" + hours;
+          //Only add label to line if not close to start or end
+          if(tickPixelLocation > 25 && (endPixelLocation - tickPixelLocation) > 25) {
+            var format = getTimeFormator(timeWidth, tick, lastTick);
+            var label = format(tick).split(" ");
+            if(label.length === 1) label.push("");
+            lastTick = tick;
             svg.append('text')
               .attr('class', 'scaleLabel')
-              .attr('x', timeScale(tick))
-              .attr('dx', '-1.25em')
+              .attr('x', tickPixelLocation)
+              .attr('dx', function() {
+                var dx = '-1.25em';
+                if(label[0].length > 2) var dx = '-2.25em';
+                return dx;
+              })
               .attr('y', 11)
               .attr('text-anchor', 'left')
               .attr('dominant-baseline', 'middle')
-              .text(hours);
-
-            var mins = tick.getUTCMinutes();
-            if (mins < 10) mins = "0" + mins;
+              .text(label[0]);
             svg.append('text')
               .attr('class', 'scaleLabel')
-              .attr('x', timeScale(tick))
+              .attr('x', tickPixelLocation)
               .attr('dx', '0.25em')
               .attr('y', 11)
               .attr('text-anchor', 'right')
               .attr('dominant-baseline', 'middle')
-              .text(mins);
+              .text(label[1]);
           }
         });
 
@@ -184,6 +193,33 @@ angular.module('BootstrapAddons')
           .call(brush)
           .selectAll('rect')
             .attr('height', 22);
+      }
+
+      //https://github.com/d3/d3-3.x-api-reference/blob/master/Time-Formatting.md
+      function getTimeFormator(timeWidth, tick, lastTick) {
+        var format = null;
+        if (timeWidth <= MS_PER_DAY) {
+          if(!lastTick) {
+            format = d3.time.format.utc('%a %d');
+          } else {
+            format = d3.time.format.utc('%H %M');
+          }
+        } else if (timeWidth <= (MS_PER_DAY * 28)) {
+          if(lastTick && tick.getUTCDate() === lastTick.getUTCDate()) {
+            format = d3.time.format.utc('%H %M');
+          } else {
+            format = d3.time.format.utc('%a %d');
+          }
+        } else if (timeWidth <= (MS_PER_DAY * 365)) {
+          format = d3.time.format.utc('%b %d');
+        } else {
+          if(!lastTick || tick.getUTCFullYear() !== lastTick.getUTCFullYear()) {
+            format = d3.time.format.utc('%b %Y');
+          } else {
+            format = d3.time.format.utc('%b %d');
+          }
+        }
+        return format;
       }
     }
   }
