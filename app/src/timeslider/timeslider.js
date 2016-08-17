@@ -80,9 +80,9 @@ angular.module('BootstrapAddons')
         //update extent
         brush.extent([start, end]);
         //draw brush to match new extent
-        brush(d3.select('.brush'));
+        brush(d3.select('.ba-brush'));
         //fire brush events
-        brush.event(d3.select('.brush'));
+        brush.event(d3.select('.ba-brush'));
       }
 
       function pause() {
@@ -116,7 +116,7 @@ angular.module('BootstrapAddons')
         drawTimeline();
         if(oldBrush[0].getTime() !== oldBrush[1].getTime()) {
           brush.extent([oldBrush[0], oldBrush[1]]);
-          brush(d3.select('.brush'));
+          brush(d3.select('.ba-brush'));
         }
       }
 
@@ -127,7 +127,7 @@ angular.module('BootstrapAddons')
         if(scope.width <= 0) scope.width = CONTROLS_WIDTH * 2;
         var timeWidth = scope.end.getTime() - scope.start.getTime();
 
-        var container = d3.select("#timesliderContainer");
+        var container = d3.select("#ba-timeslider-container");
         container.selectAll('#' + SVG_ID).remove();
         var svg = container.append('svg')
           .attr("id", SVG_ID)
@@ -138,7 +138,7 @@ angular.module('BootstrapAddons')
           .attr("y", 0)
           .attr("width", scope.width)
           .attr("height", 22)
-          .attr("class", 'timeslider');
+          .attr("class", 'ba-timeslider');
 
         var timeScale = d3.time.scale.utc()
           .domain([scope.start.getTime(), scope.end.getTime()])
@@ -150,7 +150,7 @@ angular.module('BootstrapAddons')
         timeScale.ticks(parseInt(scope.ticks, 10)).forEach(function(tick, index) {
           var tickPixelLocation = timeScale(tick);
           svg.append('line')
-            .attr('class', 'scaleLine')
+            .attr('class', 'ba-scaleline')
             .attr('x1', tickPixelLocation)
             .attr('x2', tickPixelLocation)
             .attr('y1', 0)
@@ -163,7 +163,7 @@ angular.module('BootstrapAddons')
             if(label.length === 1) label.push("");
             lastTick = tick;
             svg.append('text')
-              .attr('class', 'scaleLabel')
+              .attr('class', 'ba-scalelabel')
               .attr('x', tickPixelLocation)
               .attr('dx', function() {
                 var dx = '-1.25em';
@@ -175,7 +175,7 @@ angular.module('BootstrapAddons')
               .attr('dominant-baseline', 'middle')
               .text(label[0]);
             svg.append('text')
-              .attr('class', 'scaleLabel')
+              .attr('class', 'ba-scalelabel')
               .attr('x', tickPixelLocation)
               .attr('dx', '0.25em')
               .attr('y', 11)
@@ -189,7 +189,7 @@ angular.module('BootstrapAddons')
           .x(timeScale)
           .on('brushend', brushend);
         svg.append('g')
-          .attr('class', 'brush')
+          .attr('class', 'ba-brush')
           .call(brush)
           .selectAll('rect')
             .attr('height', 22);
