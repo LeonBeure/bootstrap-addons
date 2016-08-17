@@ -25,13 +25,6 @@ angular.module('BootstrapAddons')
       var intervalId = null;
       drawTimeline();
 
-      scope.$watch('end', function(newVal, oldVal) {
-        if(newVal.getTime() !== oldVal.getTime()) {
-          scope.end = newVal;
-          redraw();
-        }
-      }, true);
-
       scope.$on('timesliderForceRender', function() {
         redraw();
       });
