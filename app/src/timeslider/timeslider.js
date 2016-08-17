@@ -1,6 +1,7 @@
 angular.module('BootstrapAddons')
 .directive('timeslider', function($document, $timeout) {
   const SVG_ID = "timesliderSvg";
+  const MIN_LABEL_SPACING = 60;
   const CONTROLS_WIDTH = 72; //fixed width of buttons used to advance timeslider
   const MS_PER_DAY = 86400000;
   return {
@@ -10,7 +11,6 @@ angular.module('BootstrapAddons')
       onClear: "&",
       onChange: "&",
       start: "=",
-      ticks: "@",
       width: "@",
     },
     templateUrl: 'timeslider/timeslider.html',
@@ -125,6 +125,7 @@ angular.module('BootstrapAddons')
           scope.width = elem[0].clientWidth - CONTROLS_WIDTH;
         }
         if(scope.width <= 0) scope.width = CONTROLS_WIDTH * 2;
+        var numTicks = scope.width / MIN_LABEL_SPACING;
         var timeWidth = scope.end.getTime() - scope.start.getTime();
 
         var container = d3.select("#ba-timeslider-container");
@@ -147,7 +148,7 @@ angular.module('BootstrapAddons')
 
         //draw time scale ticks
         var lastTick = null;
-        timeScale.ticks(parseInt(scope.ticks, 10)).forEach(function(tick, index) {
+        timeScale.ticks(numTicks).forEach(function(tick, index) {
           var tickPixelLocation = timeScale(tick);
           svg.append('line')
             .attr('class', 'ba-scaleline')

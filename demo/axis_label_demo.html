@@ -15,7 +15,7 @@
         </label>
         <input type="number" required ng-model="numDays" ng-change="updateTimeline()" ng-model-options='{ debounce: 1500 }'>
       </div>
-      <timeslider start="past" end="now" ticks="10" on-change="filterByTime" on-clear="removeTimeFilter"></timeslider>
+      <timeslider start="past" end="now" on-change="filterByTime" on-clear="removeTimeFilter"></timeslider>
     </div>
     
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
