@@ -10,10 +10,22 @@
 
     <div ng-controller="TimesliderController" style="margin:50px 30px 0px 30px;">
       <h3>Timeslider Axis Label playground</h3>
-      <div>
+      <p>{{selectedTimeRange}}</p>
+      <div class="small">
         <label>Timeslider length (days)
         </label>
         <input type="number" required ng-model="numDays" ng-change="updateTimeline()" ng-model-options='{ debounce: 1500 }'>
+      </div>
+      <div class="small">
+        <label style="float:left;">
+          snap brush to the nearest 
+        </label>
+        <select
+          ng-model="roundUnit"
+          ng-options="opt.value as opt.text for opt in sliderRoundOptions"
+          ng-change="snapToNearest()"
+          style="margin-left: .4em;">
+        </select>
       </div>
       <timeslider start="past" end="now" on-change="filterByTime" on-clear="removeTimeFilter"></timeslider>
     </div>
@@ -25,9 +37,22 @@
       var app = angular.module('resizeDemo', ['BootstrapAddons']);
 
       app.controller('TimesliderController', function($scope, $http, $timeout) {
+        const TIMESLIDER_INSTR = "Click and drag to select a time range."
         var ONE_DAY = 86400000;
         $scope.numDays = 3;
         $scope.now = new Date();
+        $scope.selectedTimeRange = TIMESLIDER_INSTR;
+        $scope.sliderRoundOptions = [
+          {text: 'Second', value: 's'},
+          {text: 'Minute', value: 'm'},
+          {text: 'Hour', value: 'h'},
+          {text: 'Day', value: 'd'},
+          {text: 'Week', value: 'w'},
+          {text: 'Month', value: 'M'},
+          {text: 'Year', value: 'y'},
+        ];
+        $scope.roundUnit = 's';
+
         
         function setPast() {
           if($scope.numDays <=0) $scope.numDays = 1;
@@ -44,9 +69,16 @@
         }
         $scope.filterByTime = function(start, end) {
           console.log("filterByTime");
+          $scope.selectedTimeRange = start.toISOString() + ' to ' + end.toISOString();
         }
         $scope.removeTimeFilter = function() {
           console.log("removeTimeFilter");
+          $scope.selectedTimeRange = TIMESLIDER_INSTR;
+        }
+        $scope.snapToNearest = function() {
+          $scope.$broadcast('timesliderSnapToNearest', {
+            snapToNearest: $scope.roundUnit
+          });
         }
       });
     </script>
