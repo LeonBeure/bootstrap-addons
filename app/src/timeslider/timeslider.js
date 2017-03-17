@@ -10,6 +10,7 @@ angular.module('BootstrapAddons')
       end: "=",
       onClear: "&",
       onChange: "&",
+      playback: "=?",
       start: "=",
       width: "@",
     },
@@ -36,11 +37,34 @@ angular.module('BootstrapAddons')
         }
       });
 
+      var playback = scope.playback;
+      if (!playback) {
+        //default playback that advances on time interval
+        playback = {
+          intervalId: null,
+          play: function(nextCallback) {
+            this.intervalId = setInterval(
+              function() {
+                nextCallback();
+              }, 1000);
+          },
+          pause: function() {
+            if (this.intervalId) {
+              clearInterval(this.intervalId);
+              this.intervalId = null;
+            }
+          }
+        };
+      }
       scope.togglePlay = function() {
-        if(intervalId) {
-          pause();
+        if (scope.actionIcon === 'glyphicon-play') {
+          //pause state, toggle to play state
+          scope.actionIcon = 'glyphicon-pause';
+          playback.play(scope.stepForward);
         } else {
-          play();
+          //play state, toggle to pause state
+          scope.actionIcon = 'glyphicon-play';
+          playback.pause();
         }
       }
       scope.stepBack = function() {
@@ -114,7 +138,7 @@ angular.module('BootstrapAddons')
         if (scope.end.getTime() === stop.getTime()) {
           snappedStop = scope.end;
         }
-        
+
         return [snappedStart, snappedStop];
       }
 
@@ -125,24 +149,6 @@ angular.module('BootstrapAddons')
         brush(d3.select('.ba-brush'));
         //fire brush events
         brush.event(d3.select('.ba-brush'));
-      }
-
-      function pause() {
-        scope.actionIcon = "glyphicon-play";
-        if(intervalId) {
-          clearInterval(intervalId);
-          intervalId = null;
-        }
-      }
-
-      function play() {
-        scope.actionIcon = "glyphicon-pause";
-        intervalId = setInterval(
-          function() {
-            scope.stepForward();
-          },
-          1000
-        );
       }
 
       function getBrushSize() {

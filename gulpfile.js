@@ -58,7 +58,9 @@ gulp.task('js', ['clean'], function() {
     .pipe(ngAnnotate())
     .pipe(gulp.dest(config.dir.out + '/js'))
     .pipe(rename('bootstrap-addons.min.js'))
-    .pipe(uglify())
+    .pipe(uglify()).on('error', function(e){
+        console.log(e);
+     })
     .pipe(gulp.dest(config.dir.out + '/js'));
 });
 gulp.task('css', ['clean'], function() {
