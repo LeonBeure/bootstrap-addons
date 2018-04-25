@@ -156,7 +156,7 @@ angular.module('BootstrapAddons')
         if (brushSize <= 0) {
           brushSize = (scope.end.getTime() - scope.start.getTime()) / 45;
         }
-        return brushSize;
+        return brushSize/24;
       }
 
       function redraw() {
